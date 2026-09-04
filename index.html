@@ -593,11 +593,25 @@ document.getElementById('addOverlay').addEventListener('click', (e)=>{
   if(e.target.id==='addOverlay') closeOverlay('addOverlay');
 });
 
-document.getElementById('saveProduct').addEventListener('click', async ()=>{
+  async function subirImagen(archivo) {
+  if (!archivo) return null;
+  const nombreArchivo = Date.now() + '_' + archivo.name;
+  const { error } = await supabase.storage
+    .from('product-images')
+    .upload(nombreArchivo, archivo);
+  if (error) { console.error('Error subiendo imagen:', error); return null; }
+  const { data } = supabase.storage.from('product-images').getPublicUrl(nombreArchivo);
+  return data.publicUrl;
+}
+  document.getElementById('saveProduct').addEventListener('click', async ()=>{
   const name = document.getElementById('f-name').value.trim();
   const price = parseFloat(document.getElementById('f-price').value);
   const stock = parseInt(document.getElementById('f-stock').value);
   const emoji = document.getElementById('f-emoji').value.trim();
+  <div class="field">
+  <label>Imagen del producto</label>
+  <input id="f-image" type="file" accept="image/*">
+</div>
   const desc = document.getElementById('f-desc').value.trim();
   const available = document.getElementById('f-available').checked;
   const errorEl = document.getElementById('addError');
